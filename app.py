@@ -14,13 +14,13 @@ import plotly.express as px
 
 csv_file = "evaluation_results.csv"
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
 st.set_page_config(
     page_title="AI Governance Dashboard",
     page_icon="🤖",
     layout="wide"
 )
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ----------------------------
 # Header
@@ -31,7 +31,7 @@ st.caption("LLM Evaluation, Monitoring, Benchmarking, and A/B Testing Platform")
 
 st.markdown(
     """
-This dashboard evaluates LLM responses across **performance, cost, safety, quality, hallucination risk, relevance, completeness, and governance score**.
+Evaluate LLM responses across **latency, cost, toxicity, readability, hallucination risk, relevance, completeness, safety, and governance score**.
 """
 )
 
@@ -65,7 +65,7 @@ st.sidebar.markdown(
 Evaluate one model response.
 
 **Model Comparison**  
-Compare two models on the same prompt.
+Compare two models using the same prompt.
 
 **Prompt A/B Testing**  
 Compare two prompt versions using the same model.
@@ -333,71 +333,7 @@ def display_result(result):
     st.divider()
 
 
-# ----------------------------
-# App Modes
-# ----------------------------
-
-results = []
-
-if app_mode == "Single Evaluation":
-    st.subheader("Single Evaluation")
-    prompt = st.text_area("Enter a prompt")
-
-    if prompt:
-        with st.spinner("Generating response and evaluating..."):
-            result = evaluate_response(
-                selected_model,
-                prompt,
-                test_type="single_evaluation",
-                variant="Single"
-            )
-            results.append(result)
-
-elif app_mode == "Model Comparison":
-    st.subheader("Model Comparison")
-    prompt = st.text_area("Enter a prompt to compare models")
-
-    if prompt:
-        with st.spinner("Comparing models..."):
-            for model_name in ["gpt-4.1-mini", "gpt-4.1-nano"]:
-                result = evaluate_response(
-                    model_name,
-                    prompt,
-                    test_type="model_comparison",
-                    variant=model_name
-                )
-                results.append(result)
-
-elif app_mode == "Prompt A/B Testing":
-    st.subheader("Prompt A/B Testing")
-
-    prompt_a = st.text_area("Prompt A")
-    prompt_b = st.text_area("Prompt B")
-
-    if prompt_a and prompt_b:
-        with st.spinner("Running A/B prompt test..."):
-            result_a = evaluate_response(
-                selected_model,
-                prompt_a,
-                test_type="prompt_ab_test",
-                variant="Prompt A"
-            )
-
-            result_b = evaluate_response(
-                selected_model,
-                prompt_b,
-                test_type="prompt_ab_test",
-                variant="Prompt B"
-            )
-
-            results.extend([result_a, result_b])
-
-
-# ----------------------------
-# Display Results
-# ----------------------------
-
-if results:
+def save_results(results):
     new_rows = pd.DataFrame(results)
 
     if os.path.exists(csv_file):
@@ -405,11 +341,8 @@ if results:
     else:
         new_rows.to_csv(csv_file, index=False)
 
-    st.subheader("Evaluation Results")
 
-    for result in results:
-        display_result(result)
-
+def show_summary(results):
     summary_df = pd.DataFrame(results)[
         [
             "variant",
@@ -453,6 +386,117 @@ if results:
         f"Best option: {best_result['variant']} using {best_result['model']} "
         f"with Governance Score {best_result['governance_score']}"
     )
+
+
+# ----------------------------
+# App Modes
+# ----------------------------
+
+results = []
+
+if app_mode == "Single Evaluation":
+    st.subheader("Single Evaluation")
+    prompt = st.text_area(
+        "Enter a prompt",
+        placeholder="Example: Explain machine learning to a beginner.",
+        height=120
+    )
+
+    run_button = st.button("🚀 Run Evaluation", type="primary")
+
+    if run_button:
+        if prompt.strip():
+            with st.spinner("Generating response and evaluating..."):
+                result = evaluate_response(
+                    selected_model,
+                    prompt,
+                    test_type="single_evaluation",
+                    variant="Single"
+                )
+                results.append(result)
+        else:
+            st.warning("Please enter a prompt before running the evaluation.")
+
+elif app_mode == "Model Comparison":
+    st.subheader("Model Comparison")
+    prompt = st.text_area(
+        "Enter a prompt to compare models",
+        placeholder="Example: Summarize the benefits and risks of AI in healthcare.",
+        height=120
+    )
+
+    run_button = st.button("⚖️ Compare Models", type="primary")
+
+    if run_button:
+        if prompt.strip():
+            with st.spinner("Comparing models..."):
+                for model_name in ["gpt-4.1-mini", "gpt-4.1-nano"]:
+                    result = evaluate_response(
+                        model_name,
+                        prompt,
+                        test_type="model_comparison",
+                        variant=model_name
+                    )
+                    results.append(result)
+        else:
+            st.warning("Please enter a prompt before comparing models.")
+
+elif app_mode == "Prompt A/B Testing":
+    st.subheader("Prompt A/B Testing")
+
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        prompt_a = st.text_area(
+            "Prompt A",
+            placeholder="Example: Explain A/B testing simply.",
+            height=160
+        )
+
+    with col_b:
+        prompt_b = st.text_area(
+            "Prompt B",
+            placeholder="Example: Explain A/B testing with a business example.",
+            height=160
+        )
+
+    run_button = st.button("🧪 Run A/B Test", type="primary")
+
+    if run_button:
+        if prompt_a.strip() and prompt_b.strip():
+            with st.spinner("Running A/B prompt test..."):
+                result_a = evaluate_response(
+                    selected_model,
+                    prompt_a,
+                    test_type="prompt_ab_test",
+                    variant="Prompt A"
+                )
+
+                result_b = evaluate_response(
+                    selected_model,
+                    prompt_b,
+                    test_type="prompt_ab_test",
+                    variant="Prompt B"
+                )
+
+                results.extend([result_a, result_b])
+        else:
+            st.warning("Please enter both Prompt A and Prompt B before running the test.")
+
+
+# ----------------------------
+# Display Results
+# ----------------------------
+
+if results:
+    save_results(results)
+
+    st.subheader("Evaluation Results")
+
+    for result in results:
+        display_result(result)
+
+    show_summary(results)
 
     st.success("Evaluation saved to evaluation_results.csv")
 
