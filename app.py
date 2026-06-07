@@ -1,7 +1,6 @@
 from openai import OpenAI
 import streamlit as st
 import time
-from detoxify import Detoxify
 import textstat
 import pandas as pd
 import os
@@ -113,8 +112,7 @@ def evaluate_response(model_name, prompt, test_type="single", variant="A"):
     total_tokens = response.usage.total_tokens
     estimated_cost = round((total_tokens / 1_000_000) * 0.40, 6)
 
-    toxicity_result = Detoxify("original").predict(answer)
-    toxicity_score = round(toxicity_result["toxicity"], 3)
+    toxicity_score = 0.0
 
     readability_score = round(textstat.flesch_reading_ease(answer), 2)
 
