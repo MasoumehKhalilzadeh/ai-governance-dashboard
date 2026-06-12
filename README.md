@@ -41,7 +41,6 @@ This project demonstrates hands-on experience with:
 |---|---|
 | 🔗 **App** | [Launch the dashboard](https://ai-governance-app.streamlit.app/) |
 | 💻 **Code** | [View on GitHub](https://github.com/MasoumehKhalilzadeh/ai-governance-dashboard) |
-URL --> |
 
 ---
 
