@@ -270,11 +270,9 @@ Assistant response:
 
 def display_result(result):
     st.markdown(f"## {result['variant']} — {result['model']}")
-
     st.markdown("### 🛡️ Executive Summary")
 
     k1, k2, k3, k4 = st.columns(4)
-
     k1.metric("🛡️ Governance Score", result["governance_score"])
     k2.metric("🏷️ Governance Rating", result["governance_label"])
     k3.metric("⭐ Quality Score", result["quality_score"])
@@ -284,7 +282,6 @@ def display_result(result):
 
     with st.expander("🧠 AI Governance Evaluation", expanded=True):
         g1, g2, g3, g4, g5 = st.columns(5)
-
         g1.metric("⚠️ Hallucination Risk", result["hallucination_score"])
         g2.metric("🎯 Relevance", result["relevance_score"])
         g3.metric("📋 Completeness", result["completeness_score"])
@@ -293,14 +290,12 @@ def display_result(result):
 
     with st.expander("⚙️ Performance Metrics", expanded=True):
         p1, p2, p3, p4 = st.columns(4)
-
         p1.metric("⚡ Response Time", f"{result['latency']}s")
         p2.metric("🔤 Total Tokens", result["total_tokens"])
         p3.metric("📝 Prompt Tokens", result["prompt_tokens"])
         p4.metric("🤖 Completion Tokens", result["completion_tokens"])
 
         p5, p6, p7 = st.columns(3)
-
         p5.metric("📖 Readability", result["readability"])
         p6.metric("⭐ Response Quality", result["quality_label"])
         p7.metric("💰 Cost", f"${result['estimated_cost']}")
@@ -322,7 +317,12 @@ def save_results(results):
     new_rows = pd.DataFrame(results)
 
     if os.path.exists(csv_file):
-        new_rows.to_csv(csv_file, mode="a", header=False, index=False)
+        try:
+            existing_df = pd.read_csv(csv_file)
+            combined_df = pd.concat([existing_df, new_rows], ignore_index=True)
+            combined_df.to_csv(csv_file, index=False)
+        except Exception:
+            new_rows.to_csv(csv_file, index=False)
     else:
         new_rows.to_csv(csv_file, index=False)
 
@@ -367,7 +367,6 @@ def show_summary(results):
     st.plotly_chart(fig_cost, use_container_width=True)
 
     best_result = max(results, key=lambda x: x["governance_score"])
-
     st.success(
         f"Best option: {best_result['variant']} using {best_result['model']} "
         f"with Governance Score {best_result['governance_score']}"
@@ -425,7 +424,6 @@ elif app_mode == "Model Comparison":
 
 elif app_mode == "Prompt A/B Testing":
     st.subheader("Prompt A/B Testing")
-
     col_a, col_b = st.columns(2)
 
     with col_a:
@@ -468,34 +466,45 @@ elif app_mode == "Prompt A/B Testing":
 
 if results:
     save_results(results)
-
     st.subheader("Evaluation Results")
 
     for result in results:
         display_result(result)
 
     show_summary(results)
-
     st.success("Evaluation saved to evaluation_results.csv")
 
 
 st.divider()
-
 st.subheader("Evaluation History")
 
+history_df = pd.DataFrame()
+
 if os.path.exists(csv_file):
-    history_df = pd.read_csv(csv_file)
-    st.dataframe(history_df, use_container_width=True)
+    try:
+        history_df = pd.read_csv(csv_file)
+        st.dataframe(history_df, use_container_width=True)
 
-    csv_data = history_df.to_csv(index=False).encode("utf-8")
+        csv_data = history_df.to_csv(index=False).encode("utf-8")
 
-    st.download_button(
-        label="Download Evaluation Results as CSV",
-        data=csv_data,
-        file_name="evaluation_results.csv",
-        mime="text/csv"
-    )
+        st.download_button(
+            label="Download Evaluation Results as CSV",
+            data=csv_data,
+            file_name="evaluation_results.csv",
+            mime="text/csv"
+        )
 
+    except Exception:
+        st.warning(
+            "Old evaluation history file was incompatible with the current dashboard version. "
+            "Please run a new evaluation to create a fresh history file."
+        )
+        history_df = pd.DataFrame()
+else:
+    st.info("No evaluations saved yet.")
+
+
+if not history_df.empty:
     st.subheader("Portfolio Analytics")
 
     history_df["timestamp"] = pd.to_datetime(history_df["timestamp"], errors="coerce")
@@ -561,9 +570,6 @@ if os.path.exists(csv_file):
         title="Governance Score Trend"
     )
     st.plotly_chart(fig_governance_trend, use_container_width=True)
-
-else:
-    st.info("No evaluations saved yet.")
 
 st.divider()
 st.caption("Built with Streamlit, OpenAI, TextStat, Plotly, Pandas, and Python.")
