@@ -39,7 +39,7 @@ This project demonstrates hands-on experience with:
 
 | | |
 |---|---|
-| 🔗 **App** | [Launch the dashboard](#) <!-- Replace with your Streamlit Community Cloud URL --> |
+| 🔗 **App** | [[Launch the dashboard](https://ai-governance-app.streamlit.app/)](#) <!-- Replace with your Streamlit Community Cloud URL --> |
 | 💻 **Code** | [View on GitHub](#) <!-- Replace with your repository URL --> |
 
 ---
