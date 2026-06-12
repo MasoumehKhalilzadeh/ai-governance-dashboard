@@ -23,13 +23,13 @@ This project was designed to demonstrate practical skills in:
 
 **Streamlit Application**
 
-[[ADD STREAMLIT APP URL HERE](https://ai-governance-app.streamlit.app/)]
+[[STREAMLIT APP URL](https://ai-governance-app.streamlit.app/)]
 
 ---
 
 ## GitHub Repository
 
-[[ADD GITHUB REPOSITORY URL HERE]](https://github.com/MasoumehKhalilzadeh/ai-governance-dashboard/tree/main)
+[[GITHUB REPOSITORY URL]](https://github.com/MasoumehKhalilzadeh/ai-governance-dashboard/tree/main)
 
 ---
 
