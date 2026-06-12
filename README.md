@@ -43,6 +43,7 @@ This project demonstrates hands-on experience with:
 | 💻 **Code** | [View on GitHub](https://github.com/MasoumehKhalilzadeh/ai-governance-dashboard) |
 
 ---
+<img width="1469" height="669" alt="AB Testing" src="https://github.com/user-attachments/assets/8bb03d41-cf6b-4b4d-81ed-bb59c3789ad7" />
 
 
 ## ✨ Features
