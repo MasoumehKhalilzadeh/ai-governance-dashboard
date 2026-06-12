@@ -44,23 +44,6 @@ This project demonstrates hands-on experience with:
 
 ---
 
-## 📸 Screenshots
-
-> Replace these placeholders with real screenshots saved to a `docs/screenshots/` folder.
-
-| Dashboard Overview | Single Evaluation |
-|:---:|:---:|
-| ![Dashboard Overview](docs/screenshots/dashboard_overview.png) | ![Single Evaluation](docs/screenshots/single_evaluation.png) |
-
-| Model Comparison | Prompt A/B Testing |
-|:---:|:---:|
-| ![Model Comparison](docs/screenshots/model_comparison.png) | ![A/B Testing](docs/screenshots/ab_testing.png) |
-
-**Analytics Dashboard**
-
-![Analytics Dashboard](docs/screenshots/analytics_dashboard.png)
-
----
 
 ## ✨ Features
 
